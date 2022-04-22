@@ -18,12 +18,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class ExportacaoEdiClaroDAO {
 
+    private static Logger log = LoggerFactory.getLogger(ExportacaoEdiClaroDAO.class);
     private Connection connection = null;
 
     public ExportacaoEdiClaroDAO(Connection con) {
@@ -85,8 +85,7 @@ public class ExportacaoEdiClaroDAO {
         return clientes;
     }
 
-    @SneakyThrows
-    public ArrayOfDocumentoFiscalV2 montarConembCte(int idConsignatario, String dataInicio, String dataFim, String ids) {
+    public ArrayOfDocumentoFiscalV2 montarConembCte(int idConsignatario, String dataInicio, String dataFim, String ids) throws SQLException {
         ArrayOfDocumentoFiscalV2 paramDOC = null;
         DocumentoFiscalV2 doc;
         PreparedStatement prepst2 = null;
@@ -226,7 +225,6 @@ public class ExportacaoEdiClaroDAO {
         return paramDOC;
     }
 
-    @SneakyThrows
     public ArrayOfOcorrenciaTransporteV2 montarOcorenCte(int idConsignatario, String dataInicio, String dataFim, String ids) throws SQLException, ParseException, DatatypeConfigurationException {
             ArrayOfOcorrenciaTransporteV2 paramDOC = null;
             OcorrenciaTransporteV2 oco;

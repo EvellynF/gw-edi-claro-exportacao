@@ -4,19 +4,21 @@ import br.com.gwsistemas.ambiente.Ambiente;
 import br.com.gwsistemas.apoio.Apoio;
 import br.com.gwsistemas.configuracao.ConfiguracaoSAAS;
 import lombok.NonNull;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class Conexao {
-    @SneakyThrows
+    
+    private static Logger log = LoggerFactory.getLogger(Conexao.class);
+    
     @NonNull
-    public static Connection criarConexaoSAAS(@NonNull final String estagio) {
+    public static Connection criarConexaoSAAS(@NonNull final String estagio) throws SQLException {
         final Instant tempoInicial = Instant.now();
 
         final ConfiguracaoSAAS configuracaoSAAS = Apoio.carregarConfiguracaoSAAS(estagio);
@@ -43,9 +45,8 @@ public class Conexao {
         return connection;
     }
 
-    @SneakyThrows
     @NonNull
-    public static Connection criarConexaoAmbiente(@NonNull final Ambiente ambiente) {
+    public static Connection criarConexaoAmbiente(@NonNull final Ambiente ambiente) throws SQLException {
         final Instant tempoInicial = Instant.now();
 
         if (log.isDebugEnabled()) {

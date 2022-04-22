@@ -6,27 +6,37 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import java.util.Collections;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
+import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-@Slf4j
+import java.util.Collections;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class exportacaoEdiClaroHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    
+    private static Logger log = LoggerFactory.getLogger(exportacaoEdiClaroHandler.class);
     
     private static final String EXPORTAR_CLARO_XML = "exportarClaroXML";
     private static final String EXPORTAR_CLARO_CONEMB = "exportarClaroConemb";
     private static final String EXPORTAR_CLARO_OCOREN = "webserviceClaroOcoren";
 
-    @SneakyThrows
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+    @Override
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+        
+        
+        log.debug("evento={}", requestEvent);
 
         APIGatewayProxyResponseEvent responseEvent = null;
         ParametrosRequest parametros = null;
         
         try{
 
-            boolean tokenValido = Apoio.validarTokenJwt(input.getHeaders().get("token"));
+            boolean tokenValido = Apoio.validarTokenJwt(requestEvent.getHeaders().get("token"));
             
             if(!tokenValido){
                 responseEvent = new APIGatewayProxyResponseEvent();
@@ -37,30 +47,30 @@ public class exportacaoEdiClaroHandler implements RequestHandler<APIGatewayProxy
                 return responseEvent;
             }
             
-            switch(input.getHttpMethod().toUpperCase()){
-                case "POST":
-                    parametros = Apoio.OBJECT_MAPPER.readValue(input.getBody(),  ParametrosRequest.class);
-                    return exportarClaro(parametros);
-                default:
-                    responseEvent = new APIGatewayProxyResponseEvent();
-                    responseEvent.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
-                    //responseEvent.setHeaders("","");
-                    return responseEvent;
-                    
-            }
+            //if("POST".equals(requestEvent.getHttpMethod())){
+                parametros = Apoio.OBJECT_MAPPER.readValue(requestEvent.getBody(),  ParametrosRequest.class);
+                return exportarClaro(parametros);
+
+           // }
+            
+            //responseEvent = new APIGatewayProxyResponseEvent();
+            //responseEvent.setStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED);
+            //responseEvent.setHeaders("","");
+            //return responseEvent;
+            
         } catch(Exception ex){
 
             log.error(ex.getMessage(), ex);
 
             responseEvent = new APIGatewayProxyResponseEvent();
             responseEvent.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            responseEvent.setBody(Apoio.OBJECT_MAPPER.writeValueAsString(Collections.singletonMap("erro", String.format("Erro interno: %s", ex.getMessage()))));
+            responseEvent.setBody(String.format("Erro interno: %s", ex.getMessage()));
 
             return responseEvent;
         } 
     }
     
-    private APIGatewayProxyResponseEvent exportarClaro(ParametrosRequest parametros) throws Exception {
+    private APIGatewayProxyResponseEvent exportarClaro(ParametrosRequest parametros) {
         ExportacaoEdiClaroBO bo;
         String dataInicio = null;
         String dataFim = null;
@@ -93,7 +103,6 @@ public class exportacaoEdiClaroHandler implements RequestHandler<APIGatewayProxy
 
         }catch (Exception ex){
             log.error(ex.getMessage(),ex);
-            throw ex;
         } finally {
             bo = null;
             dataInicio = null;

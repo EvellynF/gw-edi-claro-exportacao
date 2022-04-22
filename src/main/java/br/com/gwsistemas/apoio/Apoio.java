@@ -7,18 +7,22 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 public class Apoio {
+    private static Logger log = LoggerFactory.getLogger(Apoio.class);
     private static final Algorithm algorithm = Algorithm.HMAC256(System.getenv("CHAVE_JWT"));
     private static final JWTVerifier jwtVerifier = JWT.require(algorithm).withIssuer("gwsistemas").build();
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -53,8 +57,7 @@ public class Apoio {
         return false;
     }
     
-    @SneakyThrows
-    public static java.sql.Date getFormatSqlData(String data) {
+    public static java.sql.Date getFormatSqlData(String data) throws ParseException {
         // Este Metodo Converte String em sql.Date
         java.sql.Date retorno = null;
         if (data == null || data.trim().equalsIgnoreCase("")) {
@@ -68,8 +71,7 @@ public class Apoio {
     }
     
     //Converter data em XMLGregorianCalendar
-    @SneakyThrows
-    public static XMLGregorianCalendar converterDataToXMLGregorianCalendar(Date data, Date hora) {
+    public static XMLGregorianCalendar converterDataToXMLGregorianCalendar(Date data, Date hora) throws DatatypeConfigurationException, ParseException {
 
         SimpleDateFormat formatoData = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
@@ -89,8 +91,7 @@ public class Apoio {
                 gregorianCalendar.get(Calendar.DAY_OF_MONTH), gregorianCalendar.get(Calendar.HOUR_OF_DAY), gregorianCalendar.get(Calendar.MINUTE), gregorianCalendar.get(Calendar.SECOND), DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED);
     }
     
-    @SneakyThrows
-    public static XMLGregorianCalendar converterDataToGregorianCalendarFusoHorario(Date data, Date hora) {
+    public static XMLGregorianCalendar converterDataToGregorianCalendarFusoHorario(Date data, Date hora) throws DatatypeConfigurationException, ParseException {
 
         SimpleDateFormat formatoData = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm:ss");
@@ -135,8 +136,7 @@ public class Apoio {
         return "'" + valorfixo.toString().trim() + "'";
     }
     
-    @SneakyThrows
-    public static Date getFormatTime(String hora) {
+    public static Date getFormatTime(String hora) throws ParseException {
         // Este Metodo Converte String em Date
         Date retorno = null;
         if (hora == null || hora.trim().equalsIgnoreCase("")) {
