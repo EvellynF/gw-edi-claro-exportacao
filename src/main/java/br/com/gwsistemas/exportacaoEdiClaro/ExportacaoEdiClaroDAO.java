@@ -10,6 +10,8 @@ import br.com.gwsistemas.claro.bean.EnumTipoDocumento;
 import br.com.gwsistemas.claro.bean.OcorrenciaTransporteV2;
 import br.com.gwsistemas.cliente.Cliente;
 import br.com.gwsistemas.cliente.ClienteLayoutEDI;
+import java.math.BigDecimal;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,6 +94,7 @@ public class ExportacaoEdiClaroDAO {
         ResultSet rs2 = null;
         DocumentoFiscalV2.ItensDocumentosFiscais idoc;
         DocumentoFiscalV2.NotasFiscais nf;
+        DocumentoFiscalV2.Composicao composicao;
         StringBuilder sqlNotas = null;
         StringBuilder sql = new StringBuilder();
         PreparedStatement prepSt = null;
@@ -152,6 +155,50 @@ public class ExportacaoEdiClaroDAO {
                 doc.setSerieConhecimentoOriginador(rs.getString("serie_redespacho"));
                 doc.setNumeroConhecimentoOriginador(rs.getString("numero_redespacho"));
                 doc.setCodigoSolicitacaoColeta("");
+                
+                BigDecimal zero = new BigDecimal(0);
+                if(rs.getBigDecimal("valor_peso") != zero){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(1);
+                    composicao.setDescricaoServico("FRETE-PESO");
+                    composicao.setValorServico(rs.getBigDecimal("valor_peso"));
+                    doc.getComposicao().add(composicao);
+                }
+                if(rs.getBigDecimal("valor_gris") != zero){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(10);
+                    composicao.setDescricaoServico("GRIS");
+                    composicao.setValorServico(rs.getBigDecimal("valor_gris"));
+                    doc.getComposicao().add(composicao);
+                }
+                if(rs.getBigDecimal("valor_frete") != zero){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(11);
+                    composicao.setDescricaoServico("AD VALOREN");
+                    composicao.setValorServico(rs.getBigDecimal("valor_frete"));
+                    doc.getComposicao().add(composicao);
+                }
+                if(rs.getBigDecimal("valor_frete") != zero){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(21);
+                    composicao.setDescricaoServico("REENTREGA");
+                    composicao.setValorServico(rs.getBigDecimal("valor_frete"));
+                    doc.getComposicao().add(composicao);
+                }
+                if("r".equals(rs.getString("sl_tipo_ctrc"))){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(21);
+                    composicao.setDescricaoServico("REENTREGA");
+                    composicao.setValorServico(rs.getBigDecimal("valor_peso"));
+                    doc.getComposicao().add(composicao);
+                }
+                if("d".equals(rs.getString("sl_tipo_ctrc"))){
+                    composicao = new DocumentoFiscalV2.Composicao();
+                    composicao.setCodigoServico(21);
+                    composicao.setDescricaoServico("DEVOLUÇÃO");
+                    composicao.setValorServico(rs.getBigDecimal("valor_peso"));
+                    doc.getComposicao().add(composicao);
+                }
 
                 sqlNotas = new StringBuilder("SELECT nf.numero , nf.serie, nf.chave_acesso FROM vexport_edi_conemb v JOIN nota_fiscal nf ON (nf.idconhecimento = v.idmovimento)");
                 if (ids != null) {
@@ -271,6 +318,8 @@ public class ExportacaoEdiClaroDAO {
                 nf.setNumeroNotaFiscal(rs.getString("nf_numero"));
                 nf.setSerieNotaFiscal(rs.getString("nf_serie"));
                 oco.getNotasFiscais().add(nf);
+                
+                
                 paramDOC.getOcorrenciaTransporteV2().add(oco);
             }
         } catch (Exception ex) {

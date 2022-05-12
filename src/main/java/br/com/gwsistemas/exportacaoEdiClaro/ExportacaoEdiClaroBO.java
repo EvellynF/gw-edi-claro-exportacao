@@ -220,7 +220,8 @@ public class ExportacaoEdiClaroBO {
     private Connection getConexao() throws SQLException{
         Conexao conexao = new Conexao();
         AmbienteBO ambienteBO = new AmbienteBO(conexao.criarConexaoSAAS(this.estagio));
-        Ambiente ambiente = ambienteBO.carregarAmbientePorChaveOrganizacao(this.chaveOrganizacao);
+        Ambiente ambiente = new Ambiente();
+        ambiente = ambienteBO.carregarAmbientePorChaveOrganizacao(this.chaveOrganizacao);
         this.con = conexao.criarConexaoAmbiente(ambiente);
         return this.con;
     }

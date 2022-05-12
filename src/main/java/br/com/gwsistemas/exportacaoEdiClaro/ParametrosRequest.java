@@ -1,26 +1,24 @@
 
 package br.com.gwsistemas.exportacaoEdiClaro;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class ParametrosRequest {
     
-    @NotNull(message = "O Código da organização não pode ficar em branco.")
-    @Size(min = 1, message = "O Código da organização não pode ficar em branco.")
+    @NotBlank(message = "O Código da organização não pode ficar em branco.")
     private String chaveOrganizacao;
-    @NotNull
+    @NotBlank
     private String dtinicialedi;
-    @NotNull
+    @NotBlank
     private String dtfinaledi;
-    @NotNull
+    @NotBlank
     private String acao;
-    @NotNull
     private int idconsignatario;
-    @NotNull
+    @NotBlank
     private String ids;
-    @NotNull
+    @NotBlank
     private String estagio; 
 }
