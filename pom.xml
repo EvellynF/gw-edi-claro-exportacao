@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.gwsistemas</groupId>
-    <artifactId>exportacao-edi-claro</artifactId>
+    <artifactId>gw-edi-claro-exportacao</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>exportacao-edi-claro</name>
+    <name>gw-edi-claro-exportacao</name>
     <description>Add project description here</description>
 
     <properties>
@@ -27,15 +27,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.3.0-alpha14</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -59,11 +53,6 @@
           <version>3.11.0</version>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20220320</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.4.15</version>
@@ -75,22 +64,25 @@
             <version>2.0.1.Final</version>
         </dependency>
         <dependency>
-		<groupId>com.google.code.gson</groupId>
-		<artifactId>gson</artifactId>
-		<version>2.8.5</version>
-	</dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.0.13.Final</version>
+        </dependency>
         <dependency>
-            <groupId>gw-claro</groupId>
-            <artifactId>gw-claro</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${project.basedir}/dependencias/gw-claro.jar</systemPath>
-	</dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.59</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.3.2</version>
         </dependency>
     </dependencies>
 
@@ -134,10 +126,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

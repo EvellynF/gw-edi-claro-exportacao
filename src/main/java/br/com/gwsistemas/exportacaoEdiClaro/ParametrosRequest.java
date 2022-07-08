@@ -2,10 +2,14 @@
 package br.com.gwsistemas.exportacaoEdiClaro;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.Data;
 
-@Data
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+
+@Jacksonized
+@Builder
+@Value
 public class ParametrosRequest {
     
     @NotBlank(message = "O Código da organização não pode ficar em branco.")
@@ -14,8 +18,6 @@ public class ParametrosRequest {
     private String dtinicialedi;
     @NotBlank
     private String dtfinaledi;
-    @NotBlank
-    private String acao;
     private int idconsignatario;
     @NotBlank
     private String ids;

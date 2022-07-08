@@ -20,13 +20,13 @@ import br.com.gwsistemas.claro.bean.RetornoDocumentoFiscalV2;
 import br.com.gwsistemas.claro.bean.RetornoOcorrenciaTransporteV2;
 import br.com.gwsistemas.claro.servicos.ChamadaServicos;
 import br.com.gwsistemas.conexao.Conexao;
-import java.sql.SQLException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
+
+@Slf4j
 public class ExportacaoEdiClaroBO {
     
-    Logger log = LoggerFactory.getLogger(ExportacaoEdiClaroBO.class);    
     
     private String chaveOrganizacao;
     private String estagio;
@@ -103,7 +103,7 @@ public class ExportacaoEdiClaroBO {
         return resposta;
     }
 
-    public StringBuilder enviarOcorenClaro(int idConsignatario, String dataInicio, String dataFim, String ids) throws SQLException{
+    public StringBuilder enviarOcorenClaro(int idConsignatario, String dataInicio, String dataFim, String ids, String token) throws SQLException{
         ArrayOfOcorrenciaTransporteV2 arrayDOC;
         ClassAuthenticationV2 autenticacao;
         ChamadaServicos server;
@@ -125,7 +125,7 @@ public class ExportacaoEdiClaroBO {
                     autenticacao = doAutenticacao(cliente);
                 }
 
-                arrayDOC = dao.montarOcorenCte(idConsignatario, dataInicio, dataFim, ids);
+                arrayDOC = dao.montarOcorenCte(idConsignatario, dataInicio, dataFim, ids, token);
 
                 arrayRetorno = server.enviarOcorrenClaro(arrayDOC, autenticacao);
 
@@ -160,7 +160,7 @@ public class ExportacaoEdiClaroBO {
         return resposta;
     }
     
-    public StringBuilder enviarXmlClaro(int idConsignatario, String dataInicio, String dataFim, String ids, String chaveOrganizacao) throws SQLException{
+    public StringBuilder enviarXmlClaro(int idConsignatario, String dataInicio, String dataFim, String ids) throws SQLException{
         ArrayOfCTEV2 arrayCte;
         ClassAuthenticationV2 autenticacao;
         ChamadaServicos server;

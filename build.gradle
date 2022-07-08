@@ -1,0 +1,61 @@
+
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "6.5.0.2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	implementation(fileTree(dir: 'dependencias', include: '*.jar'))
+    implementation 'org.projectlombok:lombok:1.18.24'
+	annotationProcessor 'org.projectlombok:lombok:1.18.24'
+	
+    implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
+	implementation 'org.apache.logging.log4j:log4j-core:2.18.0'  
+	implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.18.0'
+    
+    implementation 'org.postgresql:postgresql:42.3.4'
+    implementation 'com.auth0:java-jwt:3.18.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.hibernate:hibernate-validator:6.0.13.Final'
+    //implementation 'org.glassfish:javax.el:3.0.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.codehaus.jettison:jettison:1.4.1'
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    
+    testImplementation 'junit:junit:4.12'
+}
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+
+//build.dependsOn buildZip
+
+group = 'br.com.gwsistemas'
+version = '0.0.1-SNAPSHOT'
+description = 'gw-edi-claro-exportacao'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'ISO-8859-1'
+}

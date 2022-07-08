@@ -3,19 +3,18 @@ package br.com.gwsistemas.conexao;
 import br.com.gwsistemas.ambiente.Ambiente;
 import br.com.gwsistemas.apoio.Apoio;
 import br.com.gwsistemas.configuracao.ConfiguracaoSAAS;
+import br.com.gwsistemas.exportacaoEdiClaro.ExportacaoEdiClaroBO;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class Conexao {
-    
-    private static Logger log = LoggerFactory.getLogger(Conexao.class);
     
     @NonNull
     public static Connection criarConexaoSAAS(@NonNull final String estagio) throws SQLException {

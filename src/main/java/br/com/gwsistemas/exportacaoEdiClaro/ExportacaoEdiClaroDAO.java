@@ -10,8 +10,9 @@ import br.com.gwsistemas.claro.bean.EnumTipoDocumento;
 import br.com.gwsistemas.claro.bean.OcorrenciaTransporteV2;
 import br.com.gwsistemas.cliente.Cliente;
 import br.com.gwsistemas.cliente.ClienteLayoutEDI;
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,12 +21,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class ExportacaoEdiClaroDAO {
 
-    private static Logger log = LoggerFactory.getLogger(ExportacaoEdiClaroDAO.class);
     private Connection connection = null;
 
     public ExportacaoEdiClaroDAO(Connection con) {
@@ -41,32 +40,33 @@ public class ExportacaoEdiClaroDAO {
         ResultSet rs = null;
         sql = new StringBuilder();
         try {
-            sql.append(" SELECT DISTINCT ON (cl.idcliente) cl.razaosocial, cl.cnpj, cle.login_webservice, cle.senha_webservice, cle.chave_webservice ");
-            sql.append(" from protocolo_autorizacao_cte pac ");
-            sql.append(" JOIN sales sl ON (sl.id = pac.ctrc_id and categoria = 'ct') JOIN cliente cl ON (sl.consignatario_id = cl.idcliente) JOIN cliente_layout_edi cle ON (sl.consignatario_id = cle.cliente_id) ");
+            sql.append(" SELECT DISTINCT ON (cl.idcliente) cl.razaosocial ");
+            sql.append(" from  ");
+            sql.append("  sales sl  JOIN cliente cl ON (sl.consignatario_id = cl.idcliente)  ");
             if (ids != null) {
-                sql.append(" where ctrc_id IN (").append(ids).append(") ");
+                sql.append(" where sl.id IN (").append(ids).append(") ");
             } else {
                 sql.append(" where sl.emissao_em BETWEEN ? and ? and sl.consignatario_id =").append(idConsignatario);
             }
-            sql.append(" and evento is null and cle.layout_formato_antigo = ").append(Apoio.SqlFix(layoutCliente));
+            //sql.append(" and evento is null and cle.layout_formato_antigo = ").append(Apoio.SqlFix(layoutCliente));
 
             prepSt = connection.prepareStatement(sql.toString());
             if (ids == null) {
                 prepSt.setDate(1, Apoio.getFormatSqlData(dataInicio));
                 prepSt.setDate(2, Apoio.getFormatSqlData(dataFim));
             }
+            System.out.println("\n"+prepSt.toString());
             rs = prepSt.executeQuery();
 
             while (rs.next()) {
                 cliente = new Cliente();
                 cliente.setRazaosocial(rs.getString("razaosocial"));
-                cliente.setCnpj(rs.getString("cnpj"));
-                layout = new ClienteLayoutEDI("c", cliente);
-                layout.setLogin(rs.getString("login_webservice"));
-                layout.setSenha(rs.getString("senha_webservice"));
-                layout.setChave(rs.getString("chave_webservice"));
-                cliente.getLayoutsCONEMB().add(layout);
+//                cliente.setCnpj(rs.getString("cnpj"));
+//                layout = new ClienteLayoutEDI("c", cliente);
+//                layout.setLogin(rs.getString("login_webservice"));
+//                layout.setSenha(rs.getString("senha_webservice"));
+//                layout.setChave(rs.getString("chave_webservice"));
+//                cliente.getLayoutsCONEMB().add(layout);
                 clientes.add(cliente);
             }
 
@@ -272,7 +272,7 @@ public class ExportacaoEdiClaroDAO {
         return paramDOC;
     }
 
-    public ArrayOfOcorrenciaTransporteV2 montarOcorenCte(int idConsignatario, String dataInicio, String dataFim, String ids) throws SQLException, ParseException, DatatypeConfigurationException {
+    public ArrayOfOcorrenciaTransporteV2 montarOcorenCte(int idConsignatario, String dataInicio, String dataFim, String ids, String token) throws SQLException, ParseException, DatatypeConfigurationException {
             ArrayOfOcorrenciaTransporteV2 paramDOC = null;
             OcorrenciaTransporteV2 oco;
             PreparedStatement prepst2 = null;
@@ -292,13 +292,13 @@ public class ExportacaoEdiClaroDAO {
             }
 
             prepSt = connection.prepareStatement(sql.toString());
-
             if (ids == null) {
                 prepSt.setDate(1, Apoio.getFormatSqlData(dataInicio));
                 prepSt.setDate(2, Apoio.getFormatSqlData(dataFim));
             }
 
             paramDOC = new ArrayOfOcorrenciaTransporteV2();
+            log.info(prepSt.toString());
             rs = prepSt.executeQuery();
 
             while (rs.next()) {
@@ -318,7 +318,9 @@ public class ExportacaoEdiClaroDAO {
                 nf.setNumeroNotaFiscal(rs.getString("nf_numero"));
                 nf.setSerieNotaFiscal(rs.getString("nf_serie"));
                 oco.getNotasFiscais().add(nf);
-                
+                oco.setLinkComprovante(Apoio.gerarLinkPreAssinado(rs.getString("caminho_anexo"), "conhecimento", token));
+                log.info("LinkComprovante");
+                log.info(oco.getLinkComprovante());                
                 
                 paramDOC.getOcorrenciaTransporteV2().add(oco);
             }
